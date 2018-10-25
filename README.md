@@ -1,6 +1,6 @@
 # inversify-express-utils
 
-[![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+<!-- [![Join the chat at https://gitter.im/inversify/InversifyJS](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/inversify/InversifyJS?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://secure.travis-ci.org/inversify/inversify-express-utils.svg?branch=master)](https://travis-ci.org/inversify/inversify-express-utils)
 [![Test Coverage](https://codeclimate.com/github/inversify/inversify-express-utils/badges/coverage.svg)](https://codeclimate.com/github/inversify/inversify-express-utils/coverage)
 [![npm version](https://badge.fury.io/js/inversify-express-utils.svg)](http://badge.fury.io/js/inversify-express-utils)
@@ -10,19 +10,19 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/inversify/inversify-express-utils/badge.svg)](https://snyk.io/test/github/inversify/inversify-express-utils)
 
 [![NPM](https://nodei.co/npm/inversify-express-utils.png?downloads=true&downloadRank=true)](https://nodei.co/npm/inversify-express-utils/)
-[![NPM](https://nodei.co/npm-dl/inversify-express-utils.png?months=9&height=3)](https://nodei.co/npm/inversify-express-utils/)
+[![NPM](https://nodei.co/npm-dl/inversify-express-utils.png?months=9&height=3)](https://nodei.co/npm/inversify-express-utils/) -->
 
 Some utilities for the development of express applications with Inversify.
 
 ## Installation
 
-You can install `inversify-express-utils` using npm:
+You can install `@mmis1000/inversify-express-utils` using npm:
 
 ```sh
 npm install inversify inversify-express-utils reflect-metadata --save
 ```
 
-The `inversify-express-utils` type definitions are included in the npm module and require TypeScript 2.0.
+The `@mmis1000/inversify-express-utils` type definitions are included in the npm module and require TypeScript 2.0.
 Please refer to the [InversifyJS documentation](https://github.com/inversify/InversifyJS#installation) to learn more about the installation process.
 
 ## The Basics
@@ -35,7 +35,7 @@ The following example will declare a controller that responds to `GET /foo'.
 
 ```ts
 import * as express from "express";
-import { interfaces, controller, httpGet, httpPost, httpDelete, request, queryParam, response, requestParam } from "inversify-express-utils";
+import { interfaces, controller, httpGet, httpPost, httpDelete, request, queryParam, response, requestParam } from "@mmis1000/inversify-express-utils";
 import { injectable, inject } from "inversify";
 
 @controller("/foo")

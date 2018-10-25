@@ -12,11 +12,12 @@ import {
     controller, httpMethod, all, httpGet, httpPost, httpPut, httpPatch,
     httpHead, httpDelete, request, response, params, requestParam,
     requestBody, queryParam, requestHeaders, cookies,
-    next, principal
+    next, principal, requestBodyTyped
 } from "../src/decorators";
 import * as Bluebird from "bluebird";
 import { cleanUpMetadata } from "../src/utils";
 import { it, describe, beforeEach } from "mocha";
+import { OptionalMatcher } from "../src/body_validator";
 
 describe("Integration Tests:", () => {
 
@@ -670,7 +671,6 @@ describe("Integration Tests:", () => {
         });
 
         it("should bind a method parameter to the request body", (done) => {
-
             @controller("/")
             class TestController {
                 @httpPost("/") public getTest(@requestBody() reqBody: string) {
@@ -687,6 +687,135 @@ describe("Integration Tests:", () => {
                 .post("/")
                 .send(body)
                 .expect(200, body, done);
+        });
+
+        it("should bind a method parameter to the typed request body", (done) => {
+            interface Test {
+                foo: string;
+                bar: boolean;
+                boo: number[];
+            }
+
+            @controller("/")
+            class TestController {
+                @httpPost("/") public getTest(
+                    @requestBodyTyped({foo: String, bar: Boolean, boo: [Number]}).ensure<Test>() reqBody: Test,
+                    @requestBodyTyped(String, "foo").ensure<string>() foo: Test,
+                    @requestBodyTyped(new OptionalMatcher(String), "not_exist").ensure() not_exist: string,
+                    @requestBodyTyped(new OptionalMatcher(Boolean), "bar").ensure() exist: string
+                ) {
+                    return {
+                        reqBody,
+                        foo,
+                        not_exist,
+                        exist
+                    };
+                }
+            }
+
+            server = new InversifyExpressServer(container);
+
+            let body = { foo: "bar", bar: "true", boo: ["42"] };
+
+            server.setConfig((app) => {
+                app.use(bodyParser.json());
+            });
+
+            supertest(server.build())
+                .post("/")
+                .send(body)
+                .expect(200, {
+                    reqBody: {
+                        foo: "bar",
+                        bar: true,
+                        boo: [42]
+                    },
+                    foo: "bar",
+                    exist: true
+                }, done);
+        });
+
+        it("should throw if request body unmatch", (done) => {
+            interface Test {
+                foo: string;
+            }
+
+            @controller("/")
+            class TestController {
+                @httpPost("/") public getTest(@requestBodyTyped({foo: String}).ensure<Test>() reqBody: Test) {
+                    return reqBody;
+                }
+            }
+
+            server = new InversifyExpressServer(container);
+
+            let body = {
+                k: "fdfsdf"
+            };
+
+            server.setConfig((app) => {
+                app.use(bodyParser.json());
+            });
+
+            supertest(server.build())
+                .post("/")
+                .send(body)
+                .expect(400, {}, done);
+        });
+
+        it("should throw if request body unmatch", (done) => {
+            interface Test {
+                foo: string;
+            }
+
+            @controller("/")
+            class TestController {
+                @httpPost("/") public getTest(@requestBodyTyped({foo: String}).ensureStrict<Test>() reqBody: Test) {
+                    return reqBody;
+                }
+            }
+
+            server = new InversifyExpressServer(container);
+
+            let body = {
+                foo: 123456
+            };
+
+            server.setConfig((app) => {
+                app.use(bodyParser.json());
+            });
+
+            supertest(server.build())
+                .post("/")
+                .send(body)
+                .expect(400, {}, done);
+        });
+
+        it("should throw if request body unmatch", (done) => {
+            interface Test {
+                foo: boolean[];
+            }
+
+            @controller("/")
+            class TestController {
+                @httpPost("/") public getTest(@requestBodyTyped({foo: [Boolean]}).ensure<Test>() reqBody: Test) {
+                    return reqBody;
+                }
+            }
+
+            server = new InversifyExpressServer(container);
+            let body = {
+                foo: ["ddd"]
+            };
+
+            server.setConfig((app) => {
+                app.use(bodyParser.json());
+            });
+
+            supertest(server.build())
+                .post("/")
+                .send(body)
+                .expect(400, {}, done);
         });
 
         it("should bind a method parameter to the request headers", (done) => {

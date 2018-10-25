@@ -2,6 +2,7 @@ import * as express from "express";
 import { interfaces as inversifyInterfaces } from "inversify";
 import { PARAMETER_TYPE } from "./constants";
 import { HttpResponseMessage } from "./httpResponseMessage";
+import { All, AbstractMatcher } from "./body_validator";
 
 namespace interfaces {
 
@@ -27,6 +28,10 @@ namespace interfaces {
         injectRoot: boolean;
         index: number;
         type: PARAMETER_TYPE;
+        extraType?: {
+            strict: boolean,
+            matcher: AbstractMatcher<any>
+        };
     }
 
     export interface Controller { }

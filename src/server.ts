@@ -19,6 +19,7 @@ import {
 } from "./constants";
 import { HttpResponseMessage } from "./httpResponseMessage";
 import { OutgoingHttpHeaders } from "http";
+import { toMatcher } from "./body_validator";
 
 export class InversifyExpressServer {
 
@@ -318,7 +319,7 @@ export class InversifyExpressServer {
             return [req, res, next];
         }
 
-        params.forEach(({ type, index, parameterName, injectRoot }) => {
+        params.forEach(({ type, index, parameterName, injectRoot, extraType }) => {
             switch (type) {
                 case PARAMETER_TYPE.REQUEST:
                     args[index] = req;
@@ -343,6 +344,34 @@ export class InversifyExpressServer {
                     break;
                 case PARAMETER_TYPE.PRINCIPAL:
                     args[index] = this._getPrincipal(req);
+                    break;
+                case PARAMETER_TYPE.TYPED_BODY:
+                    try {
+                        if (parameterName !== undefined) {
+                            if (extraType!!.strict) {
+                                if (!extraType!!.matcher.match(req.body[parameterName])) {
+                                    throw Object.assign(new TypeError(`type mistachr`), {status: 400});
+                                }
+
+                                args[index] = req.body[parameterName];
+                            } else {
+
+                                args[index] = extraType!!.matcher.convert(req.body[parameterName]);
+                            }
+                        } else {
+                            if (extraType!!.strict) {
+                                if (!extraType!!.matcher.match(req.body)) {
+                                    throw Object.assign(new TypeError(`type mistachr`), {status: 400});
+                                }
+                                args[index] = req.body;
+                            } else {
+                                args[index] = extraType!!.matcher.convert(req.body);
+                            }
+                        }
+                    } catch (error) {
+                        error.status = 400;
+                        throw error;
+                    }
                     break;
                 default:
                     args[index] = res;

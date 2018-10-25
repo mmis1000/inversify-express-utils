@@ -1,7 +1,7 @@
 import { InversifyExpressServer } from "./server";
 import { controller, httpMethod, httpGet, httpPut, httpPost, httpPatch,
         httpHead, all, httpDelete, request, response, requestParam, queryParam,
-        requestBody, requestHeaders, cookies, next, principal, injectHttpContext } from "./decorators";
+        requestBody, requestHeaders, cookies, next, principal, injectHttpContext, requestBodyTyped} from "./decorators";
 import { TYPE } from "./constants";
 import { interfaces } from "./interfaces";
 import * as results from "./results";
@@ -13,6 +13,7 @@ import { HttpResponseMessage } from "./httpResponseMessage";
 import { StringContent } from "./content/stringContent";
 import { JsonContent } from "./content/jsonContent";
 import { HttpContent } from "./content/httpContent";
+import { AbstractMatcher } from "./body_validator/index";
 
 export {
     getRouteInfo,
@@ -35,6 +36,7 @@ export {
     requestParam,
     queryParam,
     requestBody,
+    requestBodyTyped,
     requestHeaders,
     cookies,
     next,
@@ -46,5 +48,6 @@ export {
     HttpContent,
     StringContent,
     JsonContent,
-    results
+    results,
+    AbstractMatcher
 };
